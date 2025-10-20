@@ -15,7 +15,7 @@ using System.Security.Claims;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
-ConfigurationManager configuration = builder.Configuration;
+ConfigurationManager configuration = builder.Configuration;  
 
 
 

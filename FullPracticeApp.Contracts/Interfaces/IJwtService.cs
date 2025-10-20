@@ -9,5 +9,6 @@ namespace FullPracticeApp.Contracts.Interfaces
     public interface IJwtService
     {
         public int GetUserId();
+        public string GetUserEmail();
     }
 }

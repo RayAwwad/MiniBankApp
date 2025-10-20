@@ -7,7 +7,7 @@ namespace FullPracticeApp.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
+    [Authorize(Policy = "AdminEmail")]
     public class UserController : Controller
     {
         private readonly IUserService userService;
