@@ -32,21 +32,21 @@ namespace FullPracticeApp.Controllers
         [HttpPost("create-account")]
         public async Task<IActionResult> CreateAccount(int userId)
         {
-            await manageBankAccount.CreateAccount(userId);
+            await manageBankAccount.CreateAccount();
             return Ok("Account created successfully");
         }
 
         [HttpPut("deposit")]
-        public async Task<IActionResult> Deposit(int userId, int accountId, double amount)
+        public async Task<IActionResult> Deposit(int accountId, double amount)
         {
-            var balance = await manageBankAccount.Deposit(userId, accountId, amount);
+            var balance = await manageBankAccount.Deposit(accountId, amount);
             return Ok(balance);
         }
 
         [HttpPut("withdraw")]
-        public async Task<IActionResult> Withdraw(int userId, int accountId, double amount)
+        public async Task<IActionResult> Withdraw(int accountId, double amount)
         {
-            var balance = await manageBankAccount.Withdraw(userId, accountId, amount);
+            var balance = await manageBankAccount.Withdraw(accountId, amount);
             return Ok(balance);
         }
 

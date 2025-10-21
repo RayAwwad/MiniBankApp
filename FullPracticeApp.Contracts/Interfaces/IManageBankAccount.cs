@@ -8,10 +8,10 @@ namespace FullPracticeApp.Contracts.Interfaces
 {
     public interface IManageBankAccount
     {                                                                                                                                           
-        Task CreateAccount(int userId); 
+        Task CreateAccount(); 
         Task DeleteAccount(int userId, int accountId);
-        Task<double> Deposit(int userId, int accountId, double amount);
-        Task<double> Withdraw(int userId, int accountId, double amount);
+        Task<double> Deposit(int accountId, double amount);
+        Task<double> Withdraw(int accountId, double amount);
         Task Transfer(int senderAccountId, int receiverAccountId, double amount);
         Task<object> GetBankAccountList();
         Task<object> GetBankAccountById(int accountId);

@@ -24,55 +24,89 @@ namespace FullPracticeApp.Services.BankServices
             this.dbContext = dbContext;
             this.jwt = jwt;
         }
-        public async Task CreateAccount(int userId)
+        public async Task CreateAccount()
         {
-            var user = await dbContext.Users.FirstOrDefaultAsync(a => a.Id == userId);
-            if(user is null)
+            var userId = jwt.GetUserId();
+
+            // used AnyAsync instead of FirstOrDefaultAsync for better performance
+            var user = await dbContext.Users.AnyAsync(a => a.Id == userId);
+
+            if(!user)
             {
                 throw new Exception("User doesn't exist");
             }
-            var account = new BankAccount
-            {
-                Balance = 0,
-                CreatedAt = DateTime.UtcNow,
-                UserId = userId
-            };
-            dbContext.BankAccounts.Add(account);
-            await dbContext.SaveChangesAsync();
-        }
+                var account = new BankAccount
+                {
+                    Balance = 0,
+                    CreatedAt = DateTime.UtcNow,
+                    UserId = userId
+                };
+
+                dbContext.BankAccounts.Add(account);
+
+                await dbContext.SaveChangesAsync();
+            }
         public async Task DeleteAccount(int userId, int accountId)
         {
-            var account = await dbContext.BankAccounts.FirstOrDefaultAsync(a => a.Id == accountId && a.UserId == userId);
-            var user = await dbContext.Users.FirstOrDefaultAsync(a => a.Id == userId);
-            if (user is null)
+            // also here used AnyAsync instead of FirstOrDefaultAsync for better performance
+            var user = await dbContext.Users.AnyAsync(a => a.Id == userId);
+
+            if (!user)
             {
                 throw new Exception("User doesn't exist");
             }
+
+            var account = await dbContext.BankAccounts.FirstOrDefaultAsync(a => a.Id == accountId && a.UserId == userId);
+
             if (account is null)
             {
                 throw new Exception("Account doesn't exist");
             }
+
             account.IsDeleted = true;
+
             account.DeletedAt = DateTime.UtcNow;
+
             account.DeletedById = jwt.GetUserId();
+
             await dbContext.SaveChangesAsync();
         }
-        public async Task<double> Deposit(int userId, int accountId, double amount)
+        public async Task<double> Deposit(int accountId, double amount)
         {
-            if(amount <= 0)
+            var userId = jwt.GetUserId();
+
+            var user = await dbContext.Users.FirstOrDefaultAsync(a => a.Id == userId);
+
+            if(user is null)
+            {
+                throw new Exception("User doesn't exist");
+            }
+
+            var account = await dbContext.BankAccounts.FirstOrDefaultAsync(a => a.Id == accountId && a.UserId == userId);
+
+            if (account is null) {
+                throw new Exception("Account doesn't exist");
+            }
+
+            if (amount <= 0)
             {
                 throw new Exception("Deposit amount must be greater than zero");
             }
-            var user = await dbContext.Users.FirstOrDefaultAsync(a => a.Id == userId);
-            var amountDeposited = user?.AmountDeposited;
+
+            // removed the ? from user?.AmountDeposited since we already check if user is null
+            var amountDeposited = user.AmountDeposited;
+
             var limit = 10000;
+
             if ((amountDeposited + amount) > limit)
             {
                 throw new Exception("Deposit limit exceeded");
             }
-            var account = await dbContext.BankAccounts.FirstOrDefaultAsync(a => a.Id == accountId &&a.UserId == userId);
+            
             account.Balance += amount;
+
             user.AmountDeposited += amount;
+
             var transaction = new Transaction
             {
                 Amount = amount,
@@ -80,17 +114,36 @@ namespace FullPracticeApp.Services.BankServices
                 TransactionDate = DateTime.UtcNow,
                 BankAccountId = accountId
             };
+
             await dbContext.Transactions.AddAsync(transaction);
+
             await dbContext.SaveChangesAsync();
-            BackgroundJob.Schedule<ManageBankAccountService>(svc => svc.Withdraw(userId, accountId, 100), TimeSpan.FromMinutes(2));
+
+            BackgroundJob.Schedule<ManageBankAccountService>(svc => svc.Withdraw(accountId, 100), TimeSpan.FromMinutes(2));
+
             return account.Balance;
         }
-        public async Task<double> Withdraw(int userId, int accountId, double amount)
+        public async Task<double> Withdraw(int accountId, double amount)
         {
-            var account = await dbContext.BankAccounts.FirstOrDefaultAsync(a => a.Id == accountId && a.UserId == userId);
+            var userId = jwt.GetUserId();
+
             var user = await dbContext.Users.FirstOrDefaultAsync(a => a.Id == userId);
-            var amountWithdrawn = user?.AmountWithdrawn;
+
+            if (user is null)
+            {
+                throw new Exception("User doesn't exist");
+            }
+
+            var account = await dbContext.BankAccounts.FirstOrDefaultAsync(a => a.Id == accountId && a.UserId == userId);
+           
+            if (account is null)
+            {
+                throw new Exception("Account doesn't exist");
+            }
+            var amountWithdrawn = user.AmountWithdrawn;
+
             var limit = 10000;
+
             if ((amountWithdrawn + amount) > limit)
             {
                 throw new Exception("Withdrawal limit exceeded");
@@ -100,7 +153,9 @@ namespace FullPracticeApp.Services.BankServices
                 throw new Exception("Insufficient balance");
             }
             account.Balance -= amount;
+
             user.AmountWithdrawn += amount;
+
             var transaction = new Transaction
             {
                 Amount = amount,
@@ -109,7 +164,9 @@ namespace FullPracticeApp.Services.BankServices
                 BankAccountId = accountId
             };
             await dbContext.Transactions.AddAsync(transaction);
+
             await dbContext.SaveChangesAsync();
+
             return account.Balance;
         }
         public async Task<object> GetBankAccountList()
@@ -120,41 +177,77 @@ namespace FullPracticeApp.Services.BankServices
                 CreatedAt = a.CreatedAt,
                 UserId = a.UserId
             }).ToListAsync();
+
             return list;
         }
         public async Task<object> GetBankAccountById(int accountId)
         {
             var account = await dbContext.BankAccounts.FirstOrDefaultAsync(a => a.Id == accountId);
+
             var accountDetails = new BankAccountDetailsDto
             {
                 Balance = account.Balance,
                 CreatedAt = account.CreatedAt,
                 UserId = account.UserId
             };
+
             return accountDetails;
         }
         public async Task Transfer(int senderAccountId, int receiverAccountId, double amount)
         {
+            var userId = jwt.GetUserId();
+
+            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
+
+            if(user is null)
+            {
+                throw new Exception("User not found");
+            }
+
             var senderAccountNumber = await dbContext.BankAccounts.FirstOrDefaultAsync(b => b.Id == senderAccountId);
+
             var receiverAccountNumber = await dbContext.BankAccounts.FirstOrDefaultAsync(b => b.Id == receiverAccountId);
-            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == jwt.GetUserId());
+
+            if(senderAccountNumber is null || receiverAccountNumber is null)
+            {
+                throw new Exception("Account not found");
+            }
+
+            if(senderAccountNumber.UserId != userId)
+            {
+                throw new Exception("Unauthorized access to sender account");
+            }
+
+            if (senderAccountId == receiverAccountId)
+            {
+                throw new Exception("Cannot transfer to the same account");
+            }
+
+            if (amount <= 0)
+            {
+                throw new Exception("Transfer amount must be greater than zero");
+            }
+
             var limit = 10000;
-            var amountTransferred = user?.AmountTransferred;
+
+            var amountTransferred = user.AmountTransferred;
+
             if((amountTransferred + amount) > limit)
             {
                 throw new Exception("Transfer limit exceeded");
             }
-            if (senderAccountNumber is null || receiverAccountNumber is null)
-            {
-                throw new Exception("Account not found");
-            }
+
             if(senderAccountNumber.Balance < amount)
             {
                 throw new Exception("Insufficient balance");
             }
+
             senderAccountNumber.Balance -= amount;
+
             receiverAccountNumber.Balance += amount;
+
             user.AmountTransferred += amount;
+
             var senderTransaction = new Transaction
             {
                 Amount = amount,
@@ -162,6 +255,7 @@ namespace FullPracticeApp.Services.BankServices
                 TransactionDate = DateTime.UtcNow,
                 BankAccountId = senderAccountId
             };
+
             var receiverTransaction = new Transaction
             {
                 Amount = amount,
@@ -169,33 +263,40 @@ namespace FullPracticeApp.Services.BankServices
                 TransactionDate = DateTime.UtcNow,
                 BankAccountId = receiverAccountId
             };
-            await dbContext.Transactions.AddAsync(senderTransaction);
-            await dbContext.Transactions.AddAsync(receiverTransaction);
+
+            await dbContext.Transactions.AddRangeAsync(senderTransaction, receiverTransaction);
+
             await dbContext.SaveChangesAsync();
         }
         public async Task<object> GetTransactions()
         {
             var transactions = await dbContext.Transactions.Select(t => new
             {
-                Amount = t.Amount,
-                Type = t.Type,
-                TransactionDate = t.TransactionDate,
-                BankAccountId = t.BankAccountId
+               t.Amount,
+               t.Type,
+               t.TransactionDate,
+               t.BankAccountId
             }).ToListAsync();
+
             return transactions;
         }
         public async Task<object> GetTransactionById(int account)
         {
             var accountId = await dbContext.Transactions.FirstOrDefaultAsync(t => t.Id == account);
+
+            if (accountId == null) {
+                throw new Exception("Transaction not found");
+            }
+
             var transaction = new
             {
-                Amount = accountId.Amount,
-                Type = accountId.Type,
-                TransactionDate = accountId.TransactionDate,
-                BankAccountId = accountId.BankAccountId
+                accountId.Amount,
+                accountId.Type,
+                accountId.TransactionDate,
+                accountId.BankAccountId
             };
+
             return transaction;
         }
-
     }
 }
