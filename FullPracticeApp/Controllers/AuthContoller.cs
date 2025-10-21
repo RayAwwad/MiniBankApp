@@ -22,9 +22,9 @@ namespace FullPracticeApp.Controllers
             Response.Cookies.Append("refreshToken", result.RefreshToken, new CookieOptions
             {
                 HttpOnly = true,
-                Expires = result.RefreshTokenExpiresAtExpires
+                Secure = true,
+                Expires = result.RefreshTokenExpiresAt
             });
-            Response.Cookies.Append("accessToken", result.AccessToken);
             return Ok(result);
         }
 
@@ -35,9 +35,9 @@ namespace FullPracticeApp.Controllers
             Response.Cookies.Append("refreshToken", result.RefreshToken, new CookieOptions
             {
                 HttpOnly = true,
-                Expires = result.RefreshTokenExpiresAtExpires
+                Secure = true,
+                Expires = result.RefreshTokenExpiresAt
             });
-            Response.Cookies.Append("accessToken", result.AccessToken);
             return Ok(result);
         }
         [HttpPost("refresh")]
@@ -47,9 +47,9 @@ namespace FullPracticeApp.Controllers
             Response.Cookies.Append("refreshToken", result.RefreshToken, new CookieOptions
             {
                 HttpOnly = true,
-                Expires = result.RefreshTokenExpiresAtExpires
+                Secure = true,
+                Expires = result.RefreshTokenExpiresAt
             });
-            Response.Cookies.Append("accessToken", result.AccessToken);
             Response.Cookies.Append("userId", userId.ToString());
             return Ok(result);
         }

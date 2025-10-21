@@ -80,7 +80,7 @@ namespace FullPracticeApp.Services.AuthServices
                 AccessToken = GenerateAccessToken(user.Email, user.Id),
                 RefreshToken = user.RefreshToken,
                 AccessTokenExpiresAt = DateTime.Now.AddMinutes(15),
-                RefreshTokenExpiresAtExpires = DateTime.Now.AddDays(30)
+                RefreshTokenExpiresAt = DateTime.Now.AddDays(30)
             };
             return auth;
         }
@@ -103,7 +103,7 @@ namespace FullPracticeApp.Services.AuthServices
                 AccessToken = GenerateAccessToken(user.Email, user.Id),
                 RefreshToken = user.RefreshToken,
                 AccessTokenExpiresAt = DateTime.Now.AddMinutes(15),
-                RefreshTokenExpiresAtExpires = DateTime.Now.AddDays(30)
+                RefreshTokenExpiresAt = DateTime.Now.AddDays(30)
             };
             return auth;
         }
@@ -122,7 +122,7 @@ namespace FullPracticeApp.Services.AuthServices
                 AccessToken = GenerateAccessToken(user.Email, user.Id),
                 RefreshToken = newRefreshToken,
                 AccessTokenExpiresAt = DateTime.Now.AddMinutes(15),
-                RefreshTokenExpiresAtExpires = DateTime.Now.AddDays(30)
+                RefreshTokenExpiresAt = DateTime.Now.AddDays(30)
             };
             return auth;
         }
