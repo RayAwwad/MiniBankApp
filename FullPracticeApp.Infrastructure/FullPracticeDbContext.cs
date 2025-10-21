@@ -19,6 +19,19 @@ namespace FullPracticeApp.Infrastructure
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Users>()
+                .HasMany(u => u.BankAccounts)
+                .WithOne(b => b.User)
+                .HasForeignKey(b => b.UserId);
+
+            modelBuilder.Entity<BankAccount>()
+                .HasMany(b => b.Transactions)
+                .WithOne(t => t.BankAccount)
+                .HasForeignKey(t => t.BankAccountId);
+
+
+
         }
     }
 }
