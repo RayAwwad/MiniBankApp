@@ -63,14 +63,15 @@ namespace FullPracticeApp.Services.UserServices
         }
         public async Task DeleteUser(int id)
         {
-           //var user = await dbContext.Users.Where(u => u.Id == id).ExecuteDeleteAsync();
            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == id && !u.IsDeleted);
               if (user is null)
               {
                 throw new Exception("User not found");
             }
               user.IsDeleted = true;
-              await dbContext.SaveChangesAsync();
+              user.DeletedAt = DateTime.UtcNow;
+              user.DeletedById = jwt.GetUserId();
+            await dbContext.SaveChangesAsync();
         }
         public async Task RestoreUser(int id)
         {

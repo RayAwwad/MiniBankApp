@@ -12,6 +12,9 @@ namespace FullPracticeApp.Domain.Entities
         public int Id { get; set; }
         public double Balance { get; set; }
         public DateTime CreatedAt { get; set; }
+        public bool IsDeleted { get; set; } = false;
+        public int DeletedById { get; set; }
+        public DateTime DeletedAt { get; set; }
         public int UserId { get; set; }
         public Users User { get; set; }
 

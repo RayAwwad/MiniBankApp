@@ -52,7 +52,9 @@ namespace FullPracticeApp.Services.BankServices
             {
                 throw new Exception("Account doesn't exist");
             }
-            dbContext.BankAccounts.Remove(account);
+            account.IsDeleted = true;
+            account.DeletedAt = DateTime.UtcNow;
+            account.DeletedById = jwt.GetUserId();
             await dbContext.SaveChangesAsync();
         }
         public async Task<double> Deposit(int userId, int accountId, double amount)

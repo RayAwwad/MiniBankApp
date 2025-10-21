@@ -16,6 +16,8 @@ namespace FullPracticeApp.Domain.Entities
         public string HashedPassword { get; set; }
         public string RefreshToken { get; set; } = null;
         public bool IsDeleted { get; set; } = false;
+        public int DeletedById { get; set; }  
+        public DateTime DeletedAt { get; set; }
         public double AmountWithdrawn { get; set; } = 0;
         public double AmountDeposited { get; set; } = 0;
         public double AmountTransferred { get; set; } = 0;
