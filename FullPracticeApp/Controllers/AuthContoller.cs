@@ -16,7 +16,7 @@ namespace FullPracticeApp.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login(LoginDto loginDto)
+        public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {
             var result = await authService.Login(loginDto);
             Response.Cookies.Append("refreshToken", result.RefreshToken, new CookieOptions
@@ -29,7 +29,7 @@ namespace FullPracticeApp.Controllers
         }
 
         [HttpPost("signup")]
-        public async Task<IActionResult> Signup(SignupDto signupDto)
+        public async Task<IActionResult> Signup([FromBody] SignupDto signupDto)
         {
             var result = await authService.Signup(signupDto);
             Response.Cookies.Append("refreshToken", result.RefreshToken, new CookieOptions
@@ -41,7 +41,7 @@ namespace FullPracticeApp.Controllers
             return Ok(result);
         }
         [HttpPost("refresh")]
-        public async Task<IActionResult> Refresh(string refreshToken, int userId)
+        public async Task<IActionResult> Refresh([FromQuery] string refreshToken, [FromQuery] int userId)
         {
             var result = await authService.Refresh(refreshToken, userId);
             Response.Cookies.Append("refreshToken", result.RefreshToken, new CookieOptions

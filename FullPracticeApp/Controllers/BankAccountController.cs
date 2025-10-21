@@ -23,41 +23,41 @@ namespace FullPracticeApp.Controllers
         }
 
         [HttpGet("get-account-by-id")]
-        public async Task<IActionResult> GetBankAccountById(int accountId)
+        public async Task<IActionResult> GetBankAccountById([FromQuery] int accountId)
         {
             var account = await manageBankAccount.GetBankAccountById(accountId);
             return Ok(account);
         }
 
         [HttpPost("create-account")]
-        public async Task<IActionResult> CreateAccount(int userId)
+        public async Task<IActionResult> CreateAccount([FromBody] int userId)
         {
             await manageBankAccount.CreateAccount();
             return Ok("Account created successfully");
         }
 
         [HttpPut("deposit")]
-        public async Task<IActionResult> Deposit(int accountId, double amount)
+        public async Task<IActionResult> Deposit([FromQuery] int accountId, [FromQuery] double amount)
         {
             var balance = await manageBankAccount.Deposit(accountId, amount);
             return Ok(balance);
         }
 
         [HttpPut("withdraw")]
-        public async Task<IActionResult> Withdraw(int accountId, double amount)
+        public async Task<IActionResult> Withdraw([FromQuery] int accountId, [FromQuery] double amount)
         {
             var balance = await manageBankAccount.Withdraw(accountId, amount);
             return Ok(balance);
         }
 
         [HttpDelete("delete-account")]
-        public async Task<IActionResult> DeleteAccount(int userId, int accountId)
+        public async Task<IActionResult> DeleteAccount([FromQuery] int userId, [FromQuery] int accountId)
         {
             await manageBankAccount.DeleteAccount(userId, accountId);
             return Ok("Account deleted successfully");
         }
         [HttpPut("transfer")]
-        public async Task<IActionResult> Transfer(int senderAccountId, int receiverAccountId, double amount)
+        public async Task<IActionResult> Transfer([FromQuery] int senderAccountId, [FromQuery] int receiverAccountId, [FromQuery] double amount)
         {
             await manageBankAccount.Transfer(senderAccountId, receiverAccountId, amount);
             return Ok("Transfer successful");
@@ -69,7 +69,7 @@ namespace FullPracticeApp.Controllers
             return Ok(transactions);
         }
         [HttpGet("get-transaction-by-id")]
-        public async Task<IActionResult> GetTransactionById(int accountId)
+        public async Task<IActionResult> GetTransactionById([FromQuery] int accountId)
         {
             var transaction = await manageBankAccount.GetTransactionById(accountId);
             return Ok(transaction);

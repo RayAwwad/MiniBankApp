@@ -18,7 +18,7 @@ namespace FullPracticeApp.Controllers
 
 
         [HttpPut("update-info")]
-        public async Task<IActionResult> UpdateUserDetails(UserDetailsDto dto)
+        public async Task<IActionResult> UpdateUserDetails([FromBody] UserDetailsDto dto)
         {
             var updatedDto = await userService.UpdateUserInfo(dto);
             return Ok(updatedDto);
@@ -31,20 +31,20 @@ namespace FullPracticeApp.Controllers
             return Ok(users);
         }
         [HttpGet("get-user-by-id")]
-        public async Task<IActionResult> GetUserById(int id)
+        public async Task<IActionResult> GetUserById([FromQuery] int id)
         {
             var user = await userService.GetUserById(id);
             return Ok(user);
         }
 
         [HttpDelete("delete-user")]
-        public async Task<IActionResult> DeleteUser(int id)
+        public async Task<IActionResult> DeleteUser([FromQuery] int id)
         {
             await userService.DeleteUser(id);
             return Ok("User deleted successfully");
         }
         [HttpPut("restore-user")]
-        public async Task<IActionResult> RestoreUser(int id)
+        public async Task<IActionResult> RestoreUser([FromQuery] int id)
         {
             await userService.RestoreUser(id);
             return Ok("User restored successfully");
