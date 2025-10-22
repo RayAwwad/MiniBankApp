@@ -1,6 +1,7 @@
 using FullPracticeApp.Contracts.Interfaces;
 using FullPracticeApp.Infrastructure;
 using FullPracticeApp.Infrastructure.Middlewares;
+using FullPracticeApp.Services;
 using FullPracticeApp.Services.AuthServices;
 using FullPracticeApp.Services.BankServices;
 using FullPracticeApp.Services.JwtServices;
@@ -60,6 +61,8 @@ builder.Services.AddScoped<IAuthService, AuthServices>();
 builder.Services.AddScoped<IJwtService , JwtService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddHostedService<LogsCleanupService>();
+
 
 // cors policy
 builder.Services.AddCors(options =>
@@ -116,7 +119,8 @@ builder.Services.AddAuthorization(options =>
 var app = builder.Build();
 
 //middleware pipeline setup
-app.UseMiddleware<GlobalExceptionHandling>();
+app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
+app.UseMiddleware<HttpLogsMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {

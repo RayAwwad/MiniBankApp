@@ -16,6 +16,7 @@ namespace FullPracticeApp.Infrastructure
         public DbSet<Users> Users { get; set; }
         public DbSet<BankAccount> BankAccounts { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
+        public DbSet<HttpLog> HttpLogs { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

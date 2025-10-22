@@ -8,10 +8,10 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace FullPracticeApp.Infrastructure.Middlewares
 {
-    public class GlobalExceptionHandling
+    public class GlobalExceptionHandlingMiddleware
     {
         private readonly RequestDelegate _next;
-        public GlobalExceptionHandling(RequestDelegate next)
+        public GlobalExceptionHandlingMiddleware(RequestDelegate next)
         {
             _next = next;
         }
