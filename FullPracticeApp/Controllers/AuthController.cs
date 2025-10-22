@@ -53,5 +53,14 @@ namespace FullPracticeApp.Controllers
             Response.Cookies.Append("userId", userId.ToString());
             return Ok(result);
         }
+
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            await authService.Logout();
+            Response.Cookies.Delete("refreshToken");
+            Response.Cookies.Delete("userId");
+            return Ok("Logged out successfully");
+        }
     }
 }

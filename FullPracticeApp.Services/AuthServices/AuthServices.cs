@@ -107,6 +107,19 @@ namespace FullPracticeApp.Services.AuthServices
             };
             return auth;
         }
+
+        public async Task Logout()
+        {
+            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == jwt.GetUserId());
+
+            if(user is null)
+            {
+                throw new Exception("User not found");
+            }
+
+            user.RefreshToken = null;
+            await dbContext.SaveChangesAsync();
+        }
         public async Task<AuthDto> Refresh(string refreshToken, int userId)
         {
             var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);

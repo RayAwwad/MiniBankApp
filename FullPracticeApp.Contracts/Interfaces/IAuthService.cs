@@ -15,6 +15,7 @@ namespace FullPracticeApp.Contracts.Interfaces
         string GenerateRefreshToken();
         Task<AuthDto> Signup(SignupDto signupDto);
         Task<AuthDto> Login(LoginDto loginDto);
+        Task Logout();
         Task<AuthDto> Refresh(string refreshToken, int userId);
     }
 }
