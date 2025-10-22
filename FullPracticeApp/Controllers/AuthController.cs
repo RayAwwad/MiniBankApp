@@ -7,10 +7,10 @@ namespace FullPracticeApp.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class AuthContoller : Controller
+    public class AuthController : Controller
     {
         private readonly IAuthService authService;
-        public AuthContoller(IAuthService authService)
+        public AuthController(IAuthService authService)
         {
             this.authService = authService;
         }

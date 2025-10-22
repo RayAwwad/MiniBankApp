@@ -4,6 +4,7 @@ using FullPracticeApp.Infrastructure.Middlewares;
 using FullPracticeApp.Services;
 using FullPracticeApp.Services.AuthServices;
 using FullPracticeApp.Services.BankServices;
+using FullPracticeApp.Services.HttpLogsServices;
 using FullPracticeApp.Services.JwtServices;
 using FullPracticeApp.Services.UserServices;
 using Hangfire;
@@ -62,6 +63,7 @@ builder.Services.AddScoped<IJwtService , JwtService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddHostedService<LogsCleanupService>();
+builder.Services.AddScoped<IHttpLogsService, HttpLogsService>();
 
 
 // cors policy
