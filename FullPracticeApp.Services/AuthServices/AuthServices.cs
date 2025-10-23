@@ -58,7 +58,7 @@ namespace FullPracticeApp.Services.AuthServices
         public async Task<AuthDto> Signup(SignupDto signupDto)
         {
             var exists = await dbContext.Users.AnyAsync(u => u.Email.ToLower().Equals(signupDto.Email.ToLower()));
-            if(!exists)
+            if(exists)
             {
                 throw new Exception("User already exists");
             }
@@ -110,7 +110,9 @@ namespace FullPracticeApp.Services.AuthServices
 
         public async Task Logout()
         {
-            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == jwt.GetUserId());
+            var userId = jwt.GetUserId();
+
+            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
 
             if(user is null)
             {
