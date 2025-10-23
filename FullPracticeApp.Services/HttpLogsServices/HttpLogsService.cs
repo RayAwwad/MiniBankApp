@@ -27,7 +27,9 @@ namespace FullPracticeApp.Services.HttpLogsServices
                     log.QueryString,
                     log.Body,
                     log.CreatedAt
-                }).ToListAsync();
+                })
+             .AsNoTracking()
+             .ToListAsync();
 
             return logs;
         }

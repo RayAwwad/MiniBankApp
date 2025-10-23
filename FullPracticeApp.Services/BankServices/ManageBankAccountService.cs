@@ -176,13 +176,22 @@ namespace FullPracticeApp.Services.BankServices
                 Balance = a.Balance,
                 CreatedAt = a.CreatedAt,
                 UserId = a.UserId
-            }).ToListAsync();
+            })
+                .AsNoTracking()
+                .ToListAsync();
 
             return list;
         }
         public async Task<object> GetBankAccountById(int accountId)
         {
-            var account = await dbContext.BankAccounts.FirstOrDefaultAsync(a => a.Id == accountId);
+            var account = await dbContext.BankAccounts
+                .AsNoTracking()
+                .FirstOrDefaultAsync(a => a.Id == accountId);
+
+            if(account == null)
+            {
+                throw new Exception("Account not found");
+            }
 
             var accountDetails = new BankAccountDetailsDto
             {
@@ -276,13 +285,17 @@ namespace FullPracticeApp.Services.BankServices
                t.Type,
                t.TransactionDate,
                t.BankAccountId
-            }).ToListAsync();
+            })
+                .AsNoTracking()
+                .ToListAsync();
 
             return transactions;
         }
         public async Task<object> GetTransactionById(int account)
         {
-            var accountId = await dbContext.Transactions.FirstOrDefaultAsync(t => t.Id == account);
+            var accountId = await dbContext.Transactions
+                .AsNoTracking()
+                .FirstOrDefaultAsync(t => t.Id == account);
 
             if (accountId == null) {
                 throw new Exception("Transaction not found");

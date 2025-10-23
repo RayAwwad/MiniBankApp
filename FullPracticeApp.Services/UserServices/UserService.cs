@@ -22,18 +22,23 @@ namespace FullPracticeApp.Services.UserServices
         public async Task<UserDetailsDto> UpdateUserInfo(UserDetailsDto dto)
         {
             var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == jwt.GetUserId() && !u.IsDeleted);
+
             if (user is null)
             {
                 throw new Exception("User not found");
             }   
+
             user.FirstName = dto.FirstName;
             user.LastName = dto.LastName;
+
             await dbContext.SaveChangesAsync();
+
             var updatedDto = new UserDetailsDto
             {
                 FirstName = user.FirstName,
                 LastName = user.LastName,
             };
+
             return updatedDto;
         }
         public async Task<List<UserDetailsDto>> GetUsers()
@@ -44,21 +49,29 @@ namespace FullPracticeApp.Services.UserServices
             {
                 FirstName = u.FirstName,
                 LastName = u.LastName,
-            }).ToListAsync();
+            })
+                .AsNoTracking()
+                .ToListAsync();
+
             return info;
         }
         public async Task<UserDetailsDto> GetUserById(int id)
         {
-            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == id && !u.IsDeleted);
+            var user = await dbContext.Users
+                .AsNoTracking()
+                .FirstOrDefaultAsync(u => u.Id == id && !u.IsDeleted);
+
             if (user is null)
             {
                 throw new Exception("User not found");
             }
+
             var info = new UserDetailsDto
             {
                 FirstName = user.FirstName,
                 LastName = user.LastName,
             };
+
             return info;
         }
         public async Task DeleteUser(int id)
@@ -76,7 +89,13 @@ namespace FullPracticeApp.Services.UserServices
         public async Task RestoreUser(int id)
         {
             var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == id && u.IsDeleted);
+            if (user is null)
+            {
+                throw new Exception("User not found");
+            }
+
             user.IsDeleted = false;
+
             await dbContext.SaveChangesAsync();
         }
     }

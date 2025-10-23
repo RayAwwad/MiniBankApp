@@ -19,21 +19,27 @@ namespace FullPracticeApp.Services.JwtServices
         public int GetUserId()
         {
             var httpContext = _httpContextAccessor.HttpContext;
+
             if (!(httpContext.User.Identity != null && httpContext.User.Identity.IsAuthenticated))
             {
                 throw new Exception("User is not authenticated");
             }
+
             var userId = httpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
             return int.Parse(userId);
         }
         public string GetUserEmail()
         {
             var httpContext = _httpContextAccessor.HttpContext;
+
             if(!(httpContext.User.Identity != null && httpContext.User.Identity.IsAuthenticated))
             {
                 throw new Exception("User is not authenticated");
             }
+
             var userEmail = httpContext.User.FindFirst(ClaimTypes.Email)?.Value;
+
             return userEmail;
         }
     }
